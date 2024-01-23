@@ -1,9 +1,7 @@
 const { test, expect } = require('@playwright/test')
 
 test("testing that User radio button is checked", async({ page }) => {
-    // await page.goto("https://rahulshettyacademy.com/loginpagePractise/")
-    // await page.locator("#username").fill("rahulshettyacademy")
-    // await page.locator("#password").fill("learning")
+    await page.goto("https://rahulshettyacademy.com/loginpagePractise/")
 
     // selecting an option with radio buttons is as easy as finding the option you want and
     // clicking on it
@@ -29,11 +27,17 @@ test("experimenting with dropdown selection", async({ page }) => {
     await dropdown.selectOption({label : "Consultant"})
 })
 
-test.only("testing checkbox implementation", async({ page }) => {
+test("testing checkbox implementation", async({ page }) => {
     await page.goto("https://rahulshettyacademy.com/loginpagePractise/")
     let checkbox = page.locator("#terms")
+
+    // to see if something is checked is as simple as selecting an option in a radio, you
+    // just click on it
     await checkbox.click()
     await expect(checkbox).toBeChecked()
+
+    // there is not an assertion to check if a box is unchecked, but we can see if its checked
+    // and then confirm that this is false
     await checkbox.uncheck()
     let checked = await checkbox.isChecked()
     await expect(checked).toBeFalsy()
