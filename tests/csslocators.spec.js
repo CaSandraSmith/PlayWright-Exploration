@@ -79,4 +79,7 @@ test.only("filtering results for nth element with multiple elements returned", a
 
     let secondAlbumTitle = await page.locator(".home-single-album-wrapper > p").nth(2)
     await expect(secondAlbumTitle).toContainText("Chillwaves and Coffee")
+
+    let playlistsNames = await page.locator(".library-playlist-info-title").allTextContents()
+    console.log(playlistsNames)
 })
