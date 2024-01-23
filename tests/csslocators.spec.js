@@ -1,5 +1,4 @@
 const { test, expect } = require('@playwright/test')
-const exp = require('constants')
 
 // locators with css selectors
 test("css selectors practice", async({ page }) => {
