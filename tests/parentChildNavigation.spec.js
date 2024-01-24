@@ -91,4 +91,32 @@ test.only("Test checkout functionailty", async({ page }) => {
 
     // to test the value of inputs
     await expect(page.locator("[placeholder='Select Country']")).toHaveValue("United States")
+    await page.locator("text=Place Order ").click()
+
+    // make sure that the order is submitted
+    await expect(page.locator(".hero-primary")).toHaveText(" Thankyou for the order. ")
+    let orderNumber = await page.locator("label.ng-star-inserted").textContent()
+    let validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
+
+
+    // click on link to take you to orders page
+    await page.locator("button[routerlink*=myorders]").click()
+    let orders = page.locator("tbody tr")
+    await orders.first().waitFor()
+    let orderCount = await orders.count()
+
+    for (let i = 0; i < orderCount; i++) {
+        let order = orders.nth(i)
+        let num = await order.locator("th").textContent()
+        if (orderNumber.includes(num)) {
+            orderNumber = num
+            await order.locator("button:has-text('View')").click()
+            break
+        }
+    }
+
+    await expect(page.locator(".email-title")).toHaveText(" order summary ")
+    // await expect(page.locator(".email-title")).toHaveText("order summary")
+    await expect(page.locator(".col-text.-main")).toHaveText(orderNumber)
+    await expect(page.locator(".address p").nth(1)).toContainText("United States")
 })
