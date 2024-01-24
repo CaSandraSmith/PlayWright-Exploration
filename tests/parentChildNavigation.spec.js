@@ -1,6 +1,6 @@
 const { test, expect } = require("@playwright/test");
 
-test('navigating bethind parent and child locators', async({ page }) => {
+test('navigating bethind parent and child locators', async ({ page }) => {
     // in this scenario we need to find a certain heading and then click on one
     // its sibilig tags, but if we get down to that heading tag in specific
     // we can't back up to the parent and move around just as it is in css
@@ -18,7 +18,6 @@ test('navigating bethind parent and child locators', async({ page }) => {
     let products = page.locator(".card-body")
 
     let count = await products.count()
-    console.log(count)
 
     for (let i = 0; i < count; i++) {
         let current = products.nth(i)
@@ -30,8 +29,28 @@ test('navigating bethind parent and child locators', async({ page }) => {
         let name = await current.locator("b").textContent()
 
         if (name === "IPHONE 13 PRO") {
+            // finds element with the text add to cart which is the button
             await current.locator("text= Add To Cart").click()
             break
         }
     }
+
+    // this is with a wildcard reg exp
+    // await page.locator("[routerlink*='cart']").click()
+    await page.locator("[routerlink='/dashboard/cart']").click()
+
+    // this didn't work because these values don't show up on the page as soon as clicked
+    // and these assertions and locators don't have the auto wait capability
+    // let inCart = await page.locator("h3:has-text('IPHONE 13 PRO')").isVisible()
+    // await expect(inCart).toBeVisible()
+
+    await expect(page.locator("h3:has-text('IPHONE 13 PRO')")).toBeVisible()
+
+    // you can also use this:
+    // await page.locator("div li").first().waitFor()
+    // this will make PW wait for these elements to be loaded before running
+    // these tests
+    // let inCart = await page.locator("h3:has-text('IPHONE 13 PRO')").isVisible()
+    // await expect(inCart).toBeVisible()
+
 })
