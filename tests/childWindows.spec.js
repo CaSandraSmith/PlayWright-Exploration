@@ -5,9 +5,6 @@ test("handling tab change", async ({ browser }) => {
     let page = await context.newPage()
     await page.goto("https://rahulshettyacademy.com/loginpagePractise/")
 
-
-    // let newPage = context.waitForEvent("page")
-
     // promise.all takes an array of promises a makes a promimise that fulfill when all of the promisses
     // in the array are fulfilled, if any promise rejects, then all promises will reject
     let [ newPage ] = await Promise.all([
