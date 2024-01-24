@@ -52,5 +52,43 @@ test('navigating bethind parent and child locators', async ({ page }) => {
     // these tests
     // let inCart = await page.locator("h3:has-text('IPHONE 13 PRO')").isVisible()
     // await expect(inCart).toBeVisible()
+})
 
+test.only("Test checkout functionailty", async({ page }) => {
+    await page.goto("https://rahulshettyacademy.com/client/")
+    await page.locator("#userEmail").fill("casresm3@gmail.com")
+    await page.locator("#userPassword").fill("Password1")
+    await page.locator("[value='Login']").click()
+    await page.locator(".card-body").nth(2).locator("text= Add To Cart").click()
+    await page.locator("[routerlink='/dashboard/cart']").click()
+
+    await expect(page.locator("h3:has-text('IPHONE 13 PRO')")).toBeVisible()
+
+    await page.locator("button:has-text('Checkout')").click()
+
+    await expect(page.locator(".user__name > label")).toHaveText("casresm3@gmail.com")
+    
+    // this allows us to type one key at a time
+    // only used if there is special requirements on the page that
+    // prohibit the usage of fill
+    await page.locator("[placeholder='Select Country']").pressSequentially("United")
+    await page.locator("button.ta-item").nth(1).waitFor()
+    let countryButtons = page.locator("button.ta-item")
+
+    let count = await countryButtons.count()
+
+    for (let i = 0; i < count; i++) {
+        let country = countryButtons.nth(i)
+        let countryName = await countryButtons.nth(i).textContent()
+
+        if (countryName === " United States") {
+            await country.click()
+            break
+        }
+    }
+
+    // await page.pause()
+
+    // to test the value of inputs
+    await expect(page.locator("[placeholder='Select Country']")).toHaveValue("United States")
 })
