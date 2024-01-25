@@ -54,7 +54,7 @@ test('navigating bethind parent and child locators', async ({ page }) => {
     // await expect(inCart).toBeVisible()
 })
 
-test.only("Test checkout functionailty", async({ page }) => {
+test("Test checkout functionailty", async({ page }) => {
     await page.goto("https://rahulshettyacademy.com/client/")
     await page.locator("#userEmail").fill("casresm3@gmail.com")
     await page.locator("#userPassword").fill("Password1")
@@ -119,4 +119,13 @@ test.only("Test checkout functionailty", async({ page }) => {
     // await expect(page.locator(".email-title")).toHaveText("order summary")
     await expect(page.locator(".col-text.-main")).toHaveText(orderNumber)
     await expect(page.locator(".address p").nth(1)).toContainText("United States")
+})
+
+// there is a way to filter by the child text without loosing the context of
+// the parent - this is through filtering
+test("using filter locator instead of manually filtering", async ({ page }) => {
+    await page.goto("https://rahulshettyacademy.com/angularpractice/shop")
+    await page.locator("app-card").filter({hasText: "Blackberry"}).getByRole("button").click()
+
+    await expect(page.locator(".nav-link.btn")).toContainText("1")
 })
