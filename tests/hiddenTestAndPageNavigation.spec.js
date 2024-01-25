@@ -9,3 +9,16 @@ test("testing page navigation", async({ page }) => {
     await page.goForward()
     await expect(page).toHaveURL("https://www.nytimes.com/games/connections")
 })
+
+test.only("testing visibility of elements", async({ page }) => {
+    page.goto("https://characterbnb.onrender.com/")
+    let creatLink = page.getByRole("link", {name: "Create a New Spot"})
+    
+    await page.locator(".profile-button").click()
+    await expect(creatLink).toBeHidden()
+    await page.locator(".menu div").nth(1).click()
+    await page.locator(".demo-user-login").click()
+
+    await expect(creatLink).toBeVisible()
+
+})
