@@ -10,7 +10,7 @@ test("testing page navigation", async({ page }) => {
     await expect(page).toHaveURL("https://www.nytimes.com/games/connections")
 })
 
-test.only("testing visibility of elements", async({ page }) => {
+test("testing visibility of elements", async({ page }) => {
     page.goto("https://characterbnb.onrender.com/")
     let creatLink = page.getByRole("link", {name: "Create a New Spot"})
     
