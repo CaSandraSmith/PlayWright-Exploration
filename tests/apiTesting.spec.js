@@ -54,7 +54,7 @@ let token
 // })
 
 
-test.only("api testing 1", async () => {
+test("api testing 1", async () => {
     let apiContext = await request.newContext()
     // inside of the newContext method, you can send information that you wish
     // to send by default, you can load the base url, give headers, etc
@@ -74,37 +74,30 @@ test.only("api testing 1", async () => {
     // this is an APIRespnseAssertion, you can use these to make assertions
     // about the APIResponse
 
-    // let cookies = await apiContext.cookies("https://rahulshettyacademy.com")
-    // console.log("cookies", cookies)
-
     let jsonResponse = await loginRespone.json()
     // turns the json response into a JS object
 
     token = jsonResponse.token
     // gets the token that we need for our cookies to stay logged in
-    console.log("token", token)
 
 })
 
-test("api testing 2", async () => {
+test.only("api testing 2", async ( {page} ) => {
     let apiContext = await request.newContext()
     // inside of the newContext method, you can send information that you wish
     // to send by default, you can load the base url, give headers, etc
-    console.log("apicontext", apiContext)
+    await apiContext.get("http://127.0.0.1:5000/api/auth")
 
-    let loginRespone = await apiContext.post("https://lofy.onrender.com/api/auth/login",
+    let loginRespone = await apiContext.post("http://127.0.0.1:5000/api/auth/login",
         {
-            data: {
+            form: {
                 email: "demo@aa.io",
                 password: "password"
-            },
-            // headers: {
-            //     contentType
-            // }
+            }
         })
     // this will make a post request to the api, has to include the
     // appropriate payload as the second input
-    console.log(loginRespone)
+    console.log("loginRespone", loginRespone)
     await expect(loginRespone).toBeOK()
     // this is an APIRespnseAssertion, you can use these to make assertions
     // about the APIResponse
