@@ -1,5 +1,6 @@
 const { test, expect, request } = require('@playwright/test')
 let token
+let orderId
 
 // the before all method will execute once before the rest of the
 // tests execute
@@ -48,12 +49,11 @@ test.beforeAll(async () => {
     )
 
     let orderJson = await orderResponse.json()
-    console.log("order", orderJson)
-
+    orderId = orderJson.orders[0]
 })
 
 
-test.only("login with cookies found from API", async ({ page }) => {
+test("login with cookies found from API", async ({ page }) => {
     await page.addInitScript(val => {
         window.localStorage.setItem('token', val)
     }, token)
@@ -65,6 +65,21 @@ test.only("login with cookies found from API", async ({ page }) => {
 
 
     await expect(button).toBeVisible()
+
+})
+
+test.only("order was created via API", async({ page }) => {
+    await page.addInitScript(val => {
+        window.localStorage.setItem('token', val)
+    }, token)
+
+    await page.goto("https://rahulshettyacademy.com/client/")
+    await page.locator("li > button:has-text('Orders')").click()
+
+
+    let lastOrder = page.locator("tbody > tr > th").first()
+
+    await expect(lastOrder).toContainText(orderId)
 
 })
 
