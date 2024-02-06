@@ -1,62 +1,77 @@
 const { test, expect, request } = require('@playwright/test')
-let token
-let orderId
+import APIUtils from './utils/apiUtils'
 
-// the before all method will execute once before the rest of the
-// tests execute
+let loginPayload = { userEmail: "casresm3@gmail.com", userPassword: "Password1" }
+let orderPayload = { orders: [{ country: "Algeria", productOrderedId: "6581ca399fd99c85e8ee7f45" }] }
+let response
+
+// optimized solution
 test.beforeAll(async () => {
     let apiContext = await request.newContext()
     // inside of the newContext method, you can send information that you wish
     // to send by default, you can load the base url, give headers, etc
 
-    // instead of having pages, we have to make api calls
-    let loginRespone = await apiContext.post("https://rahulshettyacademy.com/api/ecom/auth/login",
-        {
-            // this is the login payload
-            data: {
-                userEmail: "casresm3@gmail.com",
-                userPassword: "Password1"
-            }
-        })
-    // this will make a post request to the api, has to include the
-    // appropriate payload as the second input
+    let apiUtils = new APIUtils(apiContext, loginPayload)
+    response = await apiUtils.createOrder(orderPayload)
 
-    await expect(loginRespone).toBeOK()
-    // this is an APIRespnseAssertion, you can use these to make assertions
-    // about the APIResponse
-
-    let jsonResponse = await loginRespone.json()
-    // turns the json response into a JS object
-
-    token = jsonResponse.token
-    // gets the token that we need for our cookies to stay logged in
-
-    let orderResponse = await apiContext.post("https://rahulshettyacademy.com/api/ecom/order/create-order",
-        {
-            // this is the payload required to make an order
-            data: {orders: [{
-                country: "Algeria",
-                productOrderedId: "6581ca399fd99c85e8ee7f45"
-            }]},
-            headers: {
-                // this application requires that the token is sent with the header authorization
-                // to post to the users account, this can vary based on how the actual API is
-                // written and needs to be varified with dev team
-                'Authorization': token,
-                'Content-Type': "application/json"
-            }
-        },
-    )
-
-    let orderJson = await orderResponse.json()
-    orderId = orderJson.orders[0]
 })
+
+// non-optimized solution
+// // the before all method will execute once before the rest of the
+// // tests execute
+// test.beforeAll(async () => {
+//     let apiContext = await request.newContext()
+//     // inside of the newContext method, you can send information that you wish
+//     // to send by default, you can load the base url, give headers, etc
+
+//     // instead of having pages, we have to make api calls
+//     let loginRespone = await apiContext.post("https://rahulshettyacademy.com/api/ecom/auth/login",
+//         {
+//             // this is the login payload
+//             data: {
+//                 userEmail: "casresm3@gmail.com",
+//                 userPassword: "Password1"
+//             }
+//         })
+//     // this will make a post request to the api, has to include the
+//     // appropriate payload as the second input
+
+//     await expect(loginRespone).toBeOK()
+//     // this is an APIRespnseAssertion, you can use these to make assertions
+//     // about the APIResponse
+
+//     let jsonResponse = await loginRespone.json()
+//     // turns the json response into a JS object
+
+//     token = jsonResponse.token
+//     // gets the token that we need for our cookies to stay logged in
+
+//     let orderResponse = await apiContext.post("https://rahulshettyacademy.com/api/ecom/order/create-order",
+//         {
+//             // this is the payload required to make an order
+//             data: {orders: [{
+//                 country: "Algeria",
+//                 productOrderedId: "6581ca399fd99c85e8ee7f45"
+//             }]},
+//             headers: {
+//                 // this application requires that the token is sent with the header authorization
+//                 // to post to the users account, this can vary based on how the actual API is
+//                 // written and needs to be varified with dev team
+//                 'Authorization': token,
+//                 'Content-Type': "application/json"
+//             }
+//         },
+//     )
+
+//     let orderJson = await orderResponse.json()
+//     orderId = orderJson.orders[0]
+// })
 
 
 test("login with cookies found from API", async ({ page }) => {
     await page.addInitScript(val => {
         window.localStorage.setItem('token', val)
-    }, token)
+    }, response.token)
     // this is an initialization script which will be evaluated whenever
     // the page is navigate or a childframe is attached or navigated
 
@@ -68,10 +83,10 @@ test("login with cookies found from API", async ({ page }) => {
 
 })
 
-test.only("order was created via API", async({ page }) => {
+test("order was created via API", async ({ page }) => {
     await page.addInitScript(val => {
         window.localStorage.setItem('token', val)
-    }, token)
+    }, response.token)
 
     await page.goto("https://rahulshettyacademy.com/client/")
     await page.locator("li > button:has-text('Orders')").click()
@@ -79,7 +94,7 @@ test.only("order was created via API", async({ page }) => {
 
     let lastOrder = page.locator("tbody > tr > th").first()
 
-    await expect(lastOrder).toContainText(orderId)
+    await expect(lastOrder).toContainText(response.orderId)
 
 })
 
