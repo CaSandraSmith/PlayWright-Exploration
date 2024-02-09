@@ -99,7 +99,7 @@ test("order was created via API", async ({ page }) => {
 })
 
 
-test("login api test with lofy", async () => {
+test.only("login api test with lofy", async () => {
     let apiContext = await request.newContext()
 
     await apiContext.get("https://lofy.onrender.com/api/auth")
@@ -117,9 +117,12 @@ test("login api test with lofy", async () => {
 
     await expect(loginRespone).toBeOK()
 
-    let cookies = await apiContext.storageState()
-    // lets you see the current cookies and local storage within the api context
-    console.log("cookies", cookies)
+    let storageDetails = await apiContext.storageState()
+    // lets you see the current cookies and local and session storage within the api context
+    // this is especially beneficial for the cases where loging in creates very
+    // detailed cookies and/or session data and you want to skip a manual login
+    // for the rest of your tests
+    console.log("cookies", storageDetails)
 
 
     let jsonResponse = await loginRespone.json()
