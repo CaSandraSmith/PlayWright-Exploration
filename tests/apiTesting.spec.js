@@ -99,7 +99,7 @@ test("order was created via API", async ({ page }) => {
 })
 
 
-test.only("login api test with lofy", async () => {
+test("login api test with lofy", async () => {
     let apiContext = await request.newContext()
 
     await apiContext.get("https://lofy.onrender.com/api/auth")
