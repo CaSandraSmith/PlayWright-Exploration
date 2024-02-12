@@ -25,7 +25,7 @@ test.only("Orders are empty with network interception", async ({ page }) => {
     // how this works is that the API will send back the correct response, but we will change
     // the response that the browser actually sees as we cant change how the api resonds, we can only
     // control the browser
-    await page.route("https://rahulshettyacademy.com/api/ecom/order/get-orders-for-customer/65b14f51a86f8f74dc6080d2", 
+    await page.route("https://rahulshettyacademy.com/api/ecom/order/get-orders-for-customer/*", 
         async(route) => {
             let response = await page.request.fetch(route.request())
             let body = JSON.stringify(fakePayload)
@@ -46,8 +46,12 @@ test.only("Orders are empty with network interception", async ({ page }) => {
     // this will listen until an api call to that route is made, then it will run
 
     await page.locator("li > button:has-text('Orders')").click()
+    await page.waitForResponse("https://rahulshettyacademy.com/api/ecom/order/get-orders-for-customer/*")
+    // await page.waitForResponse("https://rahulshettyacademy.com/api/ecom/order/get-orders-for-customer/65b14f51a86f8f74dc6080d2")
+    // without this command we were getting an error because the api hadn't responded before we were
+    // sending our fake response, with this command, we can make the page wait until we get a response
+    // from that endpoint to move on
     
     await expect(page.locator("text=You have No Orders to show at this time.")).toBeVisible()
-    // await expect(button).toBeVisible()
 
 })
