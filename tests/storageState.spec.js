@@ -21,7 +21,7 @@ test.beforeAll(async ({ browser }) => {
     loggedInContext = await browser.newContext({ storageState: "state.json" })
 })
 
-test.only("log in via storage state", async () => {
+test("log in via storage state", async () => {
     let page = await loggedInContext.newPage()
     await page.goto("https://rahulshettyacademy.com/client/")
 

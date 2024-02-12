@@ -1,7 +1,9 @@
-const { test, expect } = require("@playwright/test")
+const { test, expect, request } = require("@playwright/test")
 import APIUtils from "./utils/apiUtils"
 let loginPayload = { userEmail: "casresm3@gmail.com", userPassword: "Password1" }
 let orderPayload = { orders: [{ country: "Algeria", productOrderedId: "6581ca399fd99c85e8ee7f45" }] }
+let response
+
 let fakePayload = {data: [], message: "No Orders"}
 // this is how the api responsds to users who don't have orders
 
@@ -11,7 +13,7 @@ test.beforeAll(async () => {
     response = await apiUtils.createOrder(orderPayload)
 })
 
-test("Orders are empty with network interception", async ({ page }) => {
+test.only("Orders are empty with network interception", async ({ page }) => {
     await page.addInitScript(val => {
         window.localStorage.setItem('token', val)
     }, response.token)
@@ -26,13 +28,14 @@ test("Orders are empty with network interception", async ({ page }) => {
     await page.route("https://rahulshettyacademy.com/api/ecom/order/get-orders-for-customer/65b14f51a86f8f74dc6080d2", 
         async(route) => {
             let response = await page.request.fetch(route.request())
+            let body = JSON.stringify(fakePayload)
             // the request helper allows us to use our page to make api calls
             // from there we are fetching the reaponse from our api at this route
             // route.request() makes the request manually and the fetch will fetch the
             // response from the api; we are catching the response
             await route.fulfill({
                 response,
-                body: fakePayload
+                body
             })
             // this is where a response is sent back to the browser and then it is rendered based on its content
             // where we are writing over the initial body of the response with our fake payload to make it look
@@ -40,8 +43,11 @@ test("Orders are empty with network interception", async ({ page }) => {
             // responded with the normal response from the api with no modifications
         }
     )
+    // this will listen until an api call to that route is made, then it will run
 
-
-    await expect(button).toBeVisible()
+    await page.locator("li > button:has-text('Orders')").click()
+    
+    await expect(page.locator("text=You have No Orders to show at this time.")).toBeVisible()
+    // await expect(button).toBeVisible()
 
 })
