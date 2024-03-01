@@ -13,7 +13,7 @@ test.beforeAll(async () => {
     response = await apiUtils.createOrder(orderPayload)
 })
 
-test.only("Orders are empty with network interception", async ({ page }) => {
+test("Orders are empty with network interception", async ({ page }) => {
     await page.addInitScript(val => {
         window.localStorage.setItem('token', val)
     }, response.token)
@@ -54,4 +54,17 @@ test.only("Orders are empty with network interception", async ({ page }) => {
     
     await expect(page.locator("text=You have No Orders to show at this time.")).toBeVisible()
 
+})
+
+test("intercepting requests to check users can't see orders that aren't their own", async ({ page }) => {
+    await page.addInitScript(val => {
+        window.localStorage.setItem('token', val)
+    }, response.token)
+    await page.goto("https://rahulshettyacademy.com/client/")
+
+    await page.route("https://rahulshettyacademy.com/api/ecom/order/get-orders-details?id=*",
+        async(route) => {
+            
+        }
+    )
 })
