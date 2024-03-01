@@ -59,7 +59,7 @@ test("Orders are empty with network interception", async ({ page }) => {
 // this can be done with the above method or the below
 // the difference with the above is that we manipulate the response after the server responds
 // the below changes the request before the server sees it
-test.only("intercepting requests to check users can't see orders that aren't their own", async ({ page }) => {
+test("intercepting requests to check users can't see orders that aren't their own", async ({ page }) => {
     await page.addInitScript(val => {
         window.localStorage.setItem('token', val)
     }, response.token)
@@ -77,4 +77,26 @@ test.only("intercepting requests to check users can't see orders that aren't the
     await page.getByRole("button", {name: "ORDERS"}).click()
     await page.locator(".btn:has-text('View')").first().click()
     await expect(page.locator(".blink_me")).toHaveText("You are not authorize to view this order")
+})
+
+// intercepts and abouts network calls
+test.only("testing how the interface responds when the server doesn't respond", async({ page }) => {
+    await page.addInitScript(val => {
+        window.localStorage.setItem('token', val)
+    }, response.token)
+
+    
+    // this will trigger a cb everytime the browser makes a request
+    page.on("request", request => console.log(request.url()))
+    // this will trigger a cb everytime a response comes from the server
+    page.on("response", response => console.log(response.url(), response.status()))
+    // this is helpful becasue it allows us to see what is failing
+
+    
+    // this aborts requests to made to any url ending in .css
+    // sometimes you may want to block the css files becasue they take too long to load
+    await page.route("**/*.css", async(route) => await route.abort())
+    // block all of the pictures
+    await page.route("**/*.{jpg, png, jpeg}", async(route) => await route.abort())
+    await page.goto("https://rahulshettyacademy.com/client/")
 })
