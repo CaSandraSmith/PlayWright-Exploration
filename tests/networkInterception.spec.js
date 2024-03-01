@@ -56,7 +56,10 @@ test("Orders are empty with network interception", async ({ page }) => {
 
 })
 
-test("intercepting requests to check users can't see orders that aren't their own", async ({ page }) => {
+// this can be done with the above method or the below
+// the difference with the above is that we manipulate the response after the server responds
+// the below changes the request before the server sees it
+test.only("intercepting requests to check users can't see orders that aren't their own", async ({ page }) => {
     await page.addInitScript(val => {
         window.localStorage.setItem('token', val)
     }, response.token)
@@ -64,7 +67,14 @@ test("intercepting requests to check users can't see orders that aren't their ow
 
     await page.route("https://rahulshettyacademy.com/api/ecom/order/get-orders-details?id=*",
         async(route) => {
-            
+            // this will overide this routes request url with this url which is to an order that doesn't belong to my user
+            await route.continue({url: "https://rahulshettyacademy.com/api/ecom/order/get-orders-details?id=621661f884b053f6765465b6"})
+            // the details will be rendered on our page based off of the response recieved from our inserted url
+            // instead of the initial one
         }
     )
+
+    await page.getByRole("button", {name: "ORDERS"}).click()
+    await page.locator(".btn:has-text('View')").first().click()
+    await expect(page.locator(".blink_me")).toHaveText("You are not authorize to view this order")
 })
