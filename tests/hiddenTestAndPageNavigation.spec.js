@@ -11,7 +11,7 @@ test("testing page navigation", async({ page }) => {
 })
 
 test("testing visibility of elements", async({ page }) => {
-    page.goto("https://characterbnb.onrender.com/")
+    await page.goto("https://characterbnb.onrender.com/")
     let creatLink = page.getByRole("link", {name: "Create a New Spot"})
     
     await page.locator(".profile-button").click()

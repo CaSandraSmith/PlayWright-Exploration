@@ -19,7 +19,7 @@ test('screenshots of individual elements', async({page}) => {
     await expect(page.locator("#displayed-text")).toBeHidden()
 })
 
-test.only('visual comparison between screenshots', async({page}) => {
+test('visual comparison between screenshots', async({page}) => {
     await page.goto("https://lofy.onrender.com/")
     await page.locator(".circle-two").waitFor()
     // if you don't have a screenshot to compare this to it at this location this test will initially fail

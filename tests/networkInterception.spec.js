@@ -80,7 +80,7 @@ test("intercepting requests to check users can't see orders that aren't their ow
 })
 
 // intercepts and abouts network calls
-test.only("testing how the interface responds when the server doesn't respond", async({ page }) => {
+test("testing how the interface responds when the server doesn't respond", async({ page }) => {
     await page.addInitScript(val => {
         window.localStorage.setItem('token', val)
     }, response.token)
