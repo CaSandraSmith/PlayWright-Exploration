@@ -1,5 +1,8 @@
 const { test, expect } = require('@playwright/test')
 
+// runs all tests in a single file parallelly instead of serially
+test.describe.configure({mode: "parallel"})
+
 // locators with css selectors
 test("css selectors practice", async({ page }) => {
     await page.goto("https://lofy.onrender.com/login")
