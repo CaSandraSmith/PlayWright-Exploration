@@ -3,9 +3,9 @@ const { test, expect } = require('@playwright/test')
 // runs all tests in a single file parallelly instead of default serial mode
 // test.describe.configure({mode: "parallel"})
 
-// default is serial but if you use this statement then PW will fail any remaining tests in the file
+// default is serial but if you use this statement then PW will skip any remaining tests in the file
 // if one test fails unlike with the default mode
-test.describe.configure({mode: "serial"})
+// test.describe.configure({mode: "serial"})
 
 // locators with css selectors
 test("css selectors practice", async({ page }) => {
